@@ -1,0 +1,74 @@
+import json
+import datetime
+import os
+
+# -----------------------------
+# PHASE 3: Audit Logging
+# -----------------------------
+# What this script does:
+# - Records important user actions (like login, file access, evidence removal)
+# - Each log entry includes: date, time, username, action, and outcome
+# - Saves all logs into a file called audit_log.json
+# -----------------------------
+
+LOG_FILE = "audit_log.json"  # The file where all logs are stored
+
+
+# -----------------------------
+# Load existing logs (if file exists), otherwise return an empty list
+# -----------------------------
+def load_logs():
+    if os.path.exists(LOG_FILE):
+        with open(LOG_FILE, "r") as f:
+            return json.load(f)
+    else:
+        return []
+
+
+# -----------------------------
+# Save logs back into the log file
+# -----------------------------
+def save_logs(logs):
+    with open(LOG_FILE, "w") as f:
+        json.dump(logs, f, indent=4)
+
+
+# -----------------------------
+# Add a new log entry
+# -----------------------------
+def log_action(username, action, outcome):
+    # Load current logs
+    logs = load_logs()
+
+    # Get current date and time
+    now = datetime.datetime.now()
+    date_str = now.strftime("%Y-%m-%d")
+    time_str = now.strftime("%H:%M:%S")
+
+    # Create a single log entry
+    entry = {
+        "date": date_str,
+        "time": time_str,
+        "user": username,
+        "action": action,
+        "outcome": outcome
+    }
+
+    # Add the new entry to the list of logs
+    logs.append(entry)
+
+    # Save the updated logs back to the file
+    save_logs(logs)
+
+    # Print feedback in the terminal so the user sees confirmation
+    print(f"[LOGGED] {date_str} {time_str} | {username} | {action} | {outcome}")
+
+
+# -----------------------------
+# Example run (only runs when script is executed directly)
+# -----------------------------
+if __name__ == "__main__":
+    # These are just test actions to show how logging works
+    log_action("jdoe", "login", "success")
+    log_action("srogers", "remove evidence", "denied - insufficient permission")
+    log_action("jdoe", "view case", "success")
